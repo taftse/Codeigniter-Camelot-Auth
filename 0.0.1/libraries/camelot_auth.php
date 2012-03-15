@@ -127,6 +127,7 @@ class camelot_auth {
 
                 return $this->return_response('error', 'driver_file_missing', 'local_response', array('Driver_Name' => $driver_name,'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
             }
+            include_once 'camelot_driver.php';
             include_once $driver_path;
             if (!class_exists($driver_file)) {
                 return $this->return_response('error', 'no_valid_class', 'local_response', array('Driver_Name' => $driver_name, 'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
@@ -172,54 +173,5 @@ class camelot_auth {
             $return_response['details'] = $response_details;
             return (object) $return_response;
         }
-    }
-}
-
-class Camelot_Driver{
-
-    public $camelot;
-    protected $CI;
-
-    public function __construct($camelot){
-        $this->camelot = $camelot;
-        $this->CI =& get_instance();
-        $this->load = new Camelot_Driver_Loader($camelot->driver_name);
-    }
-}
-
-class Camelot_Driver_Loader{
-
-    protected $CI;
-    public function __construct($driver_name)
-    {
-        $this->CI =& get_instance();
-        define('CAMELOT_DRIVER_PATH', '../camelot_drivers/'.$driver_name.'/');
-    }
-    /**
-     * Loads a config file
-     *
-     * @param   string
-     * @param   bool
-     * @param   bool
-     * @return  void
-     */
-    public function config($file = '', $use_sections = FALSE, $fail_gracefully = FALSE)
-    {
-        $this->CI->load->config(CAMELOT_DRIVER_PATH.'config/'.$file, $use_sections,$fail_gracefully);
-    }
-
-    public function library($library = '', $params = NULL, $object_name = NULL)
-    {
-
-    }
-
-    public function model()
-    {
-
-    }
-
-    public function language()
-    {
-
     }
 }
