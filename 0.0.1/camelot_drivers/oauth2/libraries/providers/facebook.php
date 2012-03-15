@@ -20,10 +20,21 @@ if (!defined('BASEPATH'))
  *
  * @subpackage camelot_auth
  */
-class Oauth2_Provider_Facebook extends OAuth_Provider
+class Oauth2_Provider_Facebook extends Oauth2_provider
 {
 	public function __Construct($driver)
 	{
 		$this->provider_name = 'Facebook';
+		parent::__Construct($driver);
+	}
+
+	public function get_scope()
+	{
+		//return ''# code...
+	}
+
+	public function get_user($access_token)
+	{
+		
 	}
 }

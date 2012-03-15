@@ -14,13 +14,13 @@ if (!defined('BASEPATH'))
  *  @filesource
  */
 
-/**
+/*
  * Inspiration Taken from Phil Sturgeons codeigniter-oauth2 spark (https://github.com/philsturgeon/codeigniter-oauth2); 
  *	
  *
  * @subpackage camelot_auth
  */
-abstract class OAuth_Provider{
+abstract class Oauth2_provider{
 
 	protected $provider_name = '';
 	
@@ -49,15 +49,19 @@ abstract class OAuth_Provider{
 	 */
 	protected $method = 'GET';
 
+	public $callback_url = NULL;
+
+	protected $CI;
+ 
 	public function __Construct($camelot_driver)
 	{
 		$this->driver = $camelot_driver;
-		
+		$this->CI = get_instance();
 		$this->driver->load->config($this->provider_name);
 
 		$this->client_ID = $this->CI->config->item('Oauth_Client_ID');
 		$this->client_Secret = $this->CI->config->item('Oauth_Client_Secret');
-		$this->callback_url = site_url(get_instance()->uri->uri_string().'/callback');
+		$this->callback_url = site_url(get_instance()->uri->uri_string());
 		if($this->CI->config->item('Oauth_Callback_URL_Override') != ""){
 			$this->callback_url = $this->CI->config->item('Oauth_Callback_URL_Override');
 		}
@@ -71,13 +75,76 @@ abstract class OAuth_Provider{
 	public function authorize($options = array())
 	{
 		$params['client_id'] = $this->client_ID;
-		$params['redirect_uri'] = $this->callback_url;
+		$params['redirect_uri'] = $this->callback_url.'/callback';
 		if ($this->CI->config->item('csrf_protection') == TRUE)
 		{
 			$params['state'] = $this->CI->security->get_csrf_hash();
 		}
 		$params['scope'] = $this->get_scope();
 		$params['response_type'] = 'code';
-		if($this->config)	'approval_prompt' => 'force' 
+		if($this->CI->config->item('force_approval') == TRUE){
+			$params['approval_prompt']= 'force';
+		}	
+		echo $this->callback_url;
+		//echo $this->authorize_URL . '?' . http_build_query($params);
+		redirect($this->authorize_URL . '?' . http_build_query($params));
 	}
+
+	public function callback(){
+		parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $get);
+
+		if ($this->CI->config->item('csrf_protection') == TRUE)
+		{
+			$_POST[$this->CI->security->get_csrf_token_name()] = $get['state'];
+			$this->CI->security->csrf_verify();
+		}
+		
+		if (isset($get['code'])) {
+			return $this->authenticate($get['code']);
+		}
+	}
+
+	public function authenticate($code){
+		$token_url['client_id'] = $this->client_ID;
+		$token_url['client_secret'] = $this->client_Secret;
+		$token_url['grant_type'] = 'authorization_code';
+		if($this->CI->config->item('Oauth_Grant_Type') != ""){
+			$token_url['grant_type'] = $this->CI->config->item('Oauth_Grant_Type');
+		}
+		switch ($token_url['grant_type'])
+		{
+			case 'authorization_code':
+				$token_url['code'] = $code;
+				$token_url['redirect_uri'] = $this->callback_url;
+			break;
+
+			case 'refresh_token':
+				$token_url['refresh_token'] = $code;
+			break;
+		}
+
+		$response = null;
+		$url = $this->access_Token_URL;
+		switch ($this->method)
+		{
+			case 'GET':
+
+				// Need to switch to Request library, but need to test it on one that works
+				
+				$url .= '?'.http_build_query($token_url);
+				$response = file_get_contents($url);
+				parse_str($response, $return); 
+
+			break;
+
+		}	
+		var_dump($return);
+	}
+
+	abstract function get_scope();
+
+	abstract function get_user($access_token);
+
+	
+
 }
