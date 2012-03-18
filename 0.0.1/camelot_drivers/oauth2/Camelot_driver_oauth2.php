@@ -82,9 +82,19 @@ class Camelot_driver_oauth2 extends Camelot_Driver {
 		if ($this->CI->uri->rsegment(4) != 'callback'){
 			$this->provider->authorize();
 		}else{
-			$callback = $this->provider->callback();
+			try{
 
+				$callback = $this->provider->callback();
+				//var_dump($callback);
+				$user_data = $this->provider->get_user($callback['access_token']);
+				var_dump($user_data);
+			}
+			catch(Oauth2_Exception $e)
+			{
+					return 'something went wrong';
+			}
 		}
+
 	}
 
 }

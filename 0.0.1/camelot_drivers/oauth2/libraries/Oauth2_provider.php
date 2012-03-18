@@ -35,11 +35,6 @@ abstract class Oauth2_provider{
 	public $scope_seperator  = ',';
 
 	/**
-	 * @var  string  additional request parameters to be used for remote requests
-	 */
-	public $callback = null;
-
-	/**
 	 * @var  array  additional request parameters to be used for remote requests
 	 */
 	protected $params = array();
@@ -50,6 +45,8 @@ abstract class Oauth2_provider{
 	protected $method = 'GET';
 
 	public $callback_url = NULL;
+
+	protected $api_endpoint = NULL;
 
 	protected $CI;
  
@@ -67,7 +64,7 @@ abstract class Oauth2_provider{
 		}
 		$this->authorize_URL = $this->CI->config->item('Oauth_Authorize_URL');
 		$this->access_Token_URL = $this->CI->config->item('Oauth_Access_Token_URL');
-		
+		$this->api_endpoint = $this->CI->config->item('Oauth_Endpoint');
 	}
 
 	
@@ -80,13 +77,16 @@ abstract class Oauth2_provider{
 		{
 			$params['state'] = $this->CI->security->get_csrf_hash();
 		}
-		$params['scope'] = $this->get_scope();
+		$scope =  $this->get_scope();
+		if(!empty($scope) && is_array($scope)){
+			$params['scope'] = implode(',', $scope);
+		}
+		
 		$params['response_type'] = 'code';
 		if($this->CI->config->item('force_approval') == TRUE){
 			$params['approval_prompt']= 'force';
 		}	
-		echo $this->callback_url;
-		//echo $this->authorize_URL . '?' . http_build_query($params);
+		
 		redirect($this->authorize_URL . '?' . http_build_query($params));
 	}
 
@@ -137,8 +137,30 @@ abstract class Oauth2_provider{
 
 			break;
 
+			case 'POST':
+				$postdata = http_build_query($token_url);
+				$opts = array(
+					'http' => array(
+						'method'  => 'POST',
+						'header'  => 'Content-type: application/x-www-form-urlencoded',
+						'content' => $postdata
+					)
+				);
+				$_default_opts = stream_context_get_params(stream_context_get_default());
+				$context = stream_context_create($opts);
+				$response = file_get_contents($url, false, $context);
+
+				$return = json_decode($response, true);
+			break;
+
 		}	
-		var_dump($return);
+
+		if(isset($return['error'])){
+			//return $this->
+			throw new Exception("Error Processing Request", 1);
+			
+		}
+		return $return;
 	}
 
 	abstract function get_scope();
