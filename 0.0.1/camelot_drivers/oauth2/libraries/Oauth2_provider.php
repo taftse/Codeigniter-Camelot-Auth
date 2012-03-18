@@ -130,7 +130,10 @@ abstract class Oauth2_provider{
 				
 				$url .= '?'.http_build_query($token_url);
 				$response = file_get_contents($url);
-				parse_str($response, $return); 
+				$return = json_decode($response , true);
+				if($return == NULL){			
+					parse_str($response, $return); 
+				}
 
 			break;
 
