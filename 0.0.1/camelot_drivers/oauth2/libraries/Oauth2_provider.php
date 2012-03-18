@@ -77,11 +77,7 @@ abstract class Oauth2_provider{
 		{
 			$params['state'] = $this->CI->security->get_csrf_hash();
 		}
-		$scope =  $this->get_scope();
-		if(!empty($scope) && is_array($scope)){
-			$params['scope'] = implode(',', $scope);
-		}
-		
+		$params['scope'] =  $this->get_scope();		
 		$params['response_type'] = 'code';
 		if($this->CI->config->item('force_approval') == TRUE){
 			$params['approval_prompt']= 'force';
@@ -125,6 +121,7 @@ abstract class Oauth2_provider{
 
 		$response = null;
 		$url = $this->access_Token_URL;
+
 		switch ($this->method)
 		{
 			case 'GET':
@@ -138,6 +135,7 @@ abstract class Oauth2_provider{
 			break;
 
 			case 'POST':
+
 				$postdata = http_build_query($token_url);
 				$opts = array(
 					'http' => array(
@@ -146,11 +144,12 @@ abstract class Oauth2_provider{
 						'content' => $postdata
 					)
 				);
-				$_default_opts = stream_context_get_params(stream_context_get_default());
-				$context = stream_context_create($opts);
-				$response = file_get_contents($url, false, $context);
 
+				$_default_opts = stream_context_get_params(stream_context_get_default());
+				$context = stream_context_create(array_merge_recursive($_default_opts['options'], $opts));
+				$response = file_get_contents($url, false, $context);
 				$return = json_decode($response, true);
+				
 			break;
 
 		}	

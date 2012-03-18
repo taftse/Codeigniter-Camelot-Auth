@@ -20,31 +20,34 @@ if (!defined('BASEPATH'))
  *
  * @subpackage camelot_auth
  */
-class Oauth2_Provider_Facebook extends Oauth2_provider
+class Oauth2_Provider_Google extends Oauth2_provider
 {
 	public function __Construct($driver)
 	{
-		$this->provider_name = 'Facebook';
+		$this->provider_name = 'Google';
 		parent::__Construct($driver);
+		$this->method = 'POST';
 	}
 
 	public function get_scope()
 	{
 		$scope = array();
-		foreach ($this->CI->config->item('Facebook_Permissions') as $premission => $value) {
-			if($value == TRUE){
+		foreach ($this->CI->config->item('Google_Permissions') as $premission => $value) {
+			if($value === TRUE){
+				$premission = 'https://www.googleapis.com/auth/userinfo.'.$premission;
 				array_push($scope,$premission);
 			}
 		}
 		if(!empty($scope) && is_array($scope)){
-			$scope = implode(',', $scope);
+			$scope = implode(' ', $scope);
 		}
+		
 		return $scope;
 	}
 
 	public function get_user($access_token)
 	{
-		$api_url = $this->api_endpoint.'?'.http_build_query(array('access_token' => $access_token));
+		$api_url = $this->api_endpoint.'?alt=json&'.http_build_query(array('access_token' => $access_token));
 
 		$userdata = json_decode(file_get_contents($api_url));
 		return $userdata;
