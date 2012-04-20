@@ -1,0 +1,24 @@
+<phpunit 
+	bootstrap="../Bootstrap.php"
+	colors="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false">
+	<php>
+        <const name="DB_DRIVER" value="mysql"/>
+    </php>
+	<testsuites>
+
+	</testsuites>
+	<filters>
+		<blacklist>
+			
+		</blacklist>
+		<whitelist>
+			
+		</whitelist>
+	</filters>
+</phpunit>
