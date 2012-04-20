@@ -1,0 +1,155 @@
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
+/*
+ *  Twsweb Network
+ * 
+ *  The codebase for the Twsweb Network sites
+ * 
+ *  @package         Twsweb Network
+ *  @author          Timothy Seebus <Timothyseebus@twsweb-int.com>
+ *  @copyright       2011, Timothy Seebus
+ *  @link            http://labs.Twsweb-int.com/network
+ *  @filesource
+ */
+
+/**
+ * Provides functionality to get/insert/update/delete
+ * user rows from the database.
+ *
+ * @subpackage camelot_auth
+ */
+class Camelot_driver_oauth2 extends Camelot_Driver {
+
+	private $provider_name;
+
+	private $client_ID;
+    private $client_Secret;
+    private $callback_URL_Override;
+    private $authorize_URL;
+    private $access_Token_URL;
+    private $CSRF_Supported;
+    private $authentication_protocol;
+
+	public function __construct($camelot)
+	{
+		parent::__construct($camelot);
+		$this->provider_name = $this->camelot->provider_name;
+
+		$this->load->config($this->provider_name);
+
+		$this->client_ID = $this->CI->config->item('Oauth_Client_ID');
+		$this->client_Secret = $this->CI->config->item('Oauth_Client_Secret');
+		$this->callback_URL_Override = $this->CI->config->item('Oauth_Callback_URL_Override');
+		$this->authorize_URL = $this->CI->config->item('Oauth_Authorize_URL');
+		$this->access_Token_URL = $this->CI->config->item('Oauth_Access_Token_URL');
+		$this->CSRF_Supported = $this->CI->config->item('Oauth_CSRF_Supported');
+		$this->authentication_protocol =  $this->CI->config->item('Oauth_Authentication_Protocol');
+	}
+
+	public function login(){
+		if ($this->CI->uri->rsegment(4) == 'callback') {
+			$callback = $this->callback();
+			if(isset($callback['access_token']))
+			{
+				$this->get_user($callback['access_token']);
+			}
+		}else{
+			$this->authorize();
+		}
+	}
+
+	private function authorize()
+	{
+		$params['client_id'] = $this->client_ID;
+        $params['redirect_uri'] = $this->callback_URL_Override. '/callback';
+        $params['response_type']='code';
+        if ($this->CI->config->item('csrf_protection') == TRUE && $this->CSRF_Supported == TRUE)
+		{
+			$params['state'] = $this->CI->security->get_csrf_hash();
+		}
+       	
+        $scope = $this->get_scope();
+        if($scope !== FALSE){
+        	$params['scope'] = $scope;
+        } 
+        redirect($this->authorize_URL . '?' . http_build_query($params));
+	}
+
+	public function callback(){
+
+			parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $get);
+			
+			if ($this->CI->config->item('csrf_protection') == TRUE && $this->CSRF_Supported == TRUE)
+			{
+				$_POST[$this->CI->security->get_csrf_token_name()] = $get['state'];
+				$this->CI->security->csrf_verify();
+			}
+			//print_r($get);
+			if (isset($get['code'])) {
+				return $this->authenticate($get['code']);
+			}else if (isset($get['error'])){
+
+			}else{
+
+			}
+	}
+
+
+	public function authenticate($code)
+	{
+		$token_url['client_id'] = $this->client_ID;
+		$token_url['client_secret'] = $this->client_Secret;
+		$token_url['grant_type'] = 'authorization_code';
+		$token_url['redirect_uri'] = $this->callback_URL_Override. '/callback';
+	
+		$token_url['code'] = $code;
+		$get_result = file_get_contents($this->access_Token_URL . '?' . http_build_query($token_url));
+		//$ch = curl_init();
+
+		//set the url, number of POST vars, POST data
+		//curl_setopt($ch,CURLOPT_URL,$this->access_Token_URL . '?' . http_build_query($token_url));
+
+		//$get_result = curl_exec($ch);
+		//curl_close($ch);
+		//echo curl_getinfo($ch);
+		echo $get_result;
+		if($this->authentication_protocol == 'JSON'){
+			$json_result = json_decode($get_result);
+			return array('access_token'=>$json_result->access_token);
+		}else{
+			parse_str($get_result, $params);
+			if(isset($params['access_token'])){
+            	return array('access_token'=>$params['access_token']);
+        	}
+		}
+         return FALSE;   
+	}
+
+	private function get_scope()
+	{
+		return 'https://www.googleapis.com/auth/userinfo.email';
+	}
+
+	public function get_user($access_token){
+			echo '<br/> access token = '.$access_token;
+
+	}
+}	
+/*
+private function authenticate_app($code) {
+        $token_url['client_id'] = $this->api_key;
+        $token_url['redirect_uri'] = $this->oauth->provider_callback . '/callback';
+        $token_url['client_secret'] = $this->api_secret;
+        $token_url['code'] = $code;
+        parse_str(file_get_contents($this->api_endpoint . '/oauth/access_token' . '?' . http_build_query($token_url)), $params);
+        if(isset($params['access_token'])){
+            return $params['access_token'];
+        }else{
+            return TRUE;
+        }
+    }
+
+
+*/

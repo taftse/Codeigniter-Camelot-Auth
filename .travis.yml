@@ -13,3 +13,6 @@ php:
   - sh -c "if [ '$DB' = 'mysql' ] || [ '$DB' = 'pdo/mysql' ]; then mysql -e 'create database IF NOT EXISTS ci_test;'; fi"
 
   script: phpunit --configuration tests/travis/$DB.phpunit.xml
+
+notifications:
+  irc: "irc.freenode.org#codeigniter"
