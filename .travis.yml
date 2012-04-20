@@ -2,3 +2,14 @@ language: php
 php:
   - 5.3
   - 5.4
+
+  env:
+  - DB=mysql
+
+  before_script:
+  - pyrus channel-discover pear.php-tools.net
+  - pyrus install http://pear.php-tools.net/get/vfsStream-0.11.2.tgz
+  - phpenv rehash
+  - sh -c "if [ '$DB' = 'mysql' ] || [ '$DB' = 'pdo/mysql' ]; then mysql -e 'create database IF NOT EXISTS ci_test;'; fi"
+
+  script: phpunit --configuration tests/travis/$DB.phpunit.xml

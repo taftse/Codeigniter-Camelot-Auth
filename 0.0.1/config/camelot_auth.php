@@ -56,7 +56,7 @@ $config['Authentication_Providers']['Github'] = array('Driver' => 'oauth2');
 $config['Authentication_Providers']['Twitter'] = array('Driver' => 'oauth1');
 $config['Authentication_Providers']['Foursquare'] = array('Driver' => 'oauth2');
 $config['Authentication_Providers']['Edugate'] = array('Driver' => 'saml2');
-
+$config['Authentication_Providers']['Youtube'] = array('Driver' => 'oauth2');
 
 /**
  *  Should Camelot-Auth Force the use of https ? True = yes, False = no 
