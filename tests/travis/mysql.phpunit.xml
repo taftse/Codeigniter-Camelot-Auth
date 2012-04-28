@@ -11,8 +11,8 @@
         <const name="DB_DRIVER" value="mysql"/>
     </php>
 	<testsuites>
-			<testsuite>
-				
+			<testsuite name="Camelot-Auth Test Suite">
+				<file>../Camelot_Auth/Setup_test.php</file>
 			</testsuite>
 	</testsuites>
 	<filters>
