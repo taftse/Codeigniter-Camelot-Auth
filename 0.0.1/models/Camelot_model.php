@@ -39,13 +39,13 @@ class Camelot_model extends CI_Model{
     public function __construct()
     {
         parent::__construct();
-
+        $this->_table = 'Auth_Account';
     }
 
 
-    public function get_account_by_id($account_ID){
+    public function get_account_by_ID($account_ID){
         echo('arg1');
-        $this->_set_where('',$account_ID);
+        $this->_set_where('Account_ID',$account_ID);
         $query = $this->db->get($_table);
         if($query->num_rows() ==1){
             return $query->row();

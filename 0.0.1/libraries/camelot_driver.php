@@ -27,7 +27,7 @@ class Camelot_Driver{
 
 	protected function _login($account_ID){
 		//$this->CI->camelot_auth->log('login',array('Account_ID' => $account_ID ));
-		$user_details = $this->CI->camelot_model->get_account_by_id($account_ID);
+		$user_details = $this->CI->Camelot_model->get_account_by_ID($account_ID);
 		return $this->create_session($user_details);
 		
 	}
