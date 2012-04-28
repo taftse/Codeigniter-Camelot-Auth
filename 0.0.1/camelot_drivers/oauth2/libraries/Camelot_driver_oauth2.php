@@ -64,7 +64,7 @@ class Camelot_driver_oauth2 extends Camelot_Driver {
 			$oauth2_account = $this->CI->oauth2_model->user_account_exist($provider_name,$user_data['user_ID']);
 			// user is found 
 			if($oauth2_account !== FALSE){
-				return $this->login($oauth2_account->OAuth_User_Account_ID);
+				return $this->_login($oauth2_account->OAuth_User_Account_ID);
 			}else{
 				$account_ID = $this->CI->oauth2_model->register_account($user_data);
 				return $this->CI->oauth2_model->create_oauth2_user($account_ID,$provider_name,$user_data['user_ID'],$auth_token);

@@ -57,7 +57,7 @@ class Camelot_auth{
         // load the required language files
         $this->CI->lang->load('camelot_error');
 
-		$this->supported_drivers = $this->CI->config->item('Authentication_Drivers');
+		    $this->supported_drivers = $this->CI->config->item('Authentication_Drivers');
         $this->supported_providers = $this->CI->config->item('Authentication_Providers');
         $this->response_codes = $this->CI->config->item('Camelot_Response_Codes');
 
