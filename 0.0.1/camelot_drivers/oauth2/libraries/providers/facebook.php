@@ -47,6 +47,10 @@ class Oauth2_Provider_Facebook extends Oauth2_provider
 		$api_url = $this->api_endpoint.'?'.http_build_query(array('access_token' => $access_token));
 
 		$userdata = json_decode(file_get_contents($api_url));
-		return $userdata;
+
+		return $this->create_user_session($userdata);
+		//return $userdata;
 	}
+
+	
 }

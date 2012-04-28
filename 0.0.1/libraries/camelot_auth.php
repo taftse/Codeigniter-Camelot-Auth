@@ -174,4 +174,9 @@ class camelot_auth {
             return (object) $return_response;
         }
     }
+
+    protected function create_session($user_ID){
+        $this->CI->session->set_userdata('User_ID',$user['User_ID']);
+        $this->CI->session->set_userdata('User_UserName',$user['Username']);
+    }
 }

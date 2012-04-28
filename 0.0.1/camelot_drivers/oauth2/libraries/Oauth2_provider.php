@@ -54,6 +54,9 @@ abstract class Oauth2_provider{
 	{
 		$this->driver = $camelot_driver;
 		$this->CI = get_instance();
+
+		$this->driver->load->model('oauth2_model');
+
 		$this->driver->load->config($this->provider_name);
 
 		$this->client_ID = $this->CI->config->item('Oauth_Client_ID');
@@ -168,7 +171,5 @@ abstract class Oauth2_provider{
 	abstract function get_scope();
 
 	abstract function get_user($access_token);
-
-	
 
 }

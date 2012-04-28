@@ -39,14 +39,15 @@ class Camelot_model extends CI_Model{
     public function __construct()
     {
         parent::__construct();
+        
 
     }
 
     public function get($primary_value)
     {
-        $this->_run_before_callbacks('get');
+        //$this->_run_before_callbacks('get');
         
-        $this->db->where($this->primary_key, $primary_value)
+        $this->db->where($this->primary_key, $primary_value);
         $result = $this->db->get($this->_table);
         return $result->row();
     }
@@ -91,7 +92,7 @@ class Camelot_model extends CI_Model{
 
 
 
-    private function _set_where($key,$value = NULL){
+    protected function _set_where($key,$value = NULL){
     		if(is_array($key)){
     			$this->db->where($key);
     		}else if($value != NULL){

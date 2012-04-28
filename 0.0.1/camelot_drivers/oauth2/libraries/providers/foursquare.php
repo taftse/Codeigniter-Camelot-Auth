@@ -48,5 +48,6 @@ class Oauth2_Provider_Foursquare extends Oauth2_provider
 
 		$userdata = json_decode(file_get_contents($api_url));
 		return $userdata;
+		
 	}
 }

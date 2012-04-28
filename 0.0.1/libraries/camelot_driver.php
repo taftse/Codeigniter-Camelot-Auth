@@ -24,6 +24,7 @@ class Camelot_Driver{
         $this->camelot = $camelot;
         $this->CI =& get_instance();
         $this->load = new Camelot_Loader($camelot->driver_name);
+        $this->CI->load->model('Camelot_model');
     }
 }
 

@@ -1,5 +1,5 @@
 <phpunit 
-	bootstrap="../Bootstrap.php"
+	bootstrap="../"
 	colors="true"
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
@@ -11,7 +11,7 @@
         <const name="DB_DRIVER" value="mysql"/>
     </php>
 	<testsuites>
-
+			<
 	</testsuites>
 	<filters>
 		<blacklist>

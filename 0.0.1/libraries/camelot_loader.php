@@ -41,9 +41,9 @@ class Camelot_Loader{
         $this->CI->load->library(CAMELOT_DRIVER_PATH.'library/'.$library,$params,$object_name);
     }
 
-    public function model()
+    public function model($model, $name = '', $db_conn = FALSE)
     {
-
+        $this->CI->load->model(CAMELOT_DRIVER_PATH.'models/'.$model, $name = '', $db_conn = FALSE);
     }
 
     public function language()
