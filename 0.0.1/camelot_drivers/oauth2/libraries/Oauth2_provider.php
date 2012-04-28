@@ -20,12 +20,14 @@ if (!defined('BASEPATH'))
  *
  * @subpackage camelot_auth
  */
+
 abstract class Oauth2_provider{
+	// the name of the identity provider 
+	public $provider_name;
 
-	protected $provider_name = '';
-	
+	// the client id provided by the provider
 	private $client_ID;
-
+	// the client secret provided by the provider 
     private $client_Secret;
 
 	/**
@@ -44,45 +46,40 @@ abstract class Oauth2_provider{
 	 */
 	protected $method = 'GET';
 
+	// this sites callback url 
 	public $callback_url = NULL;
 
+	// the providers api endpoint 
 	protected $api_endpoint = NULL;
 
+	// codeigniter instance 
 	protected $CI;
- 
-	public function __Construct($camelot_driver)
-	{
-		$this->driver = $camelot_driver;
-		$this->CI = get_instance();
-
-		$this->driver->load->model('oauth2_model');
-
-		$this->driver->load->config($this->provider_name);
-
-		$this->client_ID = $this->CI->config->item('Oauth_Client_ID');
-		$this->client_Secret = $this->CI->config->item('Oauth_Client_Secret');
+ 	
+ 	public function __construct()
+ 	{
+ 		$this->CI =& get_instance();
+ 		$this->client_ID = $this->CI->config->item('Oauth2_Client_ID');
+		$this->client_Secret = $this->CI->config->item('Oauth2_Client_Secret');
 		$this->callback_url = site_url(get_instance()->uri->uri_string());
-		if($this->CI->config->item('Oauth_Callback_URL_Override') != ""){
-			$this->callback_url = $this->CI->config->item('Oauth_Callback_URL_Override');
+		if($this->CI->config->item('Oauth2_Callback_URL_Override') != ""){
+			$this->callback_url = $this->CI->config->item('Oauth2_Callback_URL_Override');
 		}
-		$this->authorize_URL = $this->CI->config->item('Oauth_Authorize_URL');
-		$this->access_Token_URL = $this->CI->config->item('Oauth_Access_Token_URL');
-		$this->api_endpoint = $this->CI->config->item('Oauth_Endpoint');
-	}
-
-	
-
-	public function authorize($options = array())
+		$this->authorize_URL = $this->CI->config->item('Oauth2_Authorize_URL');
+		$this->access_Token_URL = $this->CI->config->item('Oauth2_Access_Token_URL');
+		$this->api_endpoint = $this->CI->config->item('Oauth2_Endpoint');
+ 	}
+ 	public function authorize($options = array())
 	{
 		$params['client_id'] = $this->client_ID;
 		$params['redirect_uri'] = $this->callback_url.'/callback';
-		if ($this->CI->config->item('csrf_protection') == TRUE)
+		if ($this->CI->config->item('Oauth2_CSRF_Supported') == TRUE)
 		{
 			$params['state'] = $this->CI->security->get_csrf_hash();
 		}
-		$params['scope'] =  $this->get_scope();		
+		$params['scope'] =  $this->get_scope();	
+
 		$params['response_type'] = 'code';
-		if($this->CI->config->item('force_approval') == TRUE){
+		if($this->CI->config->item('Oauth2_Force_Approval') == TRUE){
 			$params['approval_prompt']= 'force';
 		}	
 		
@@ -92,7 +89,7 @@ abstract class Oauth2_provider{
 	public function callback(){
 		parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $get);
 
-		if ($this->CI->config->item('csrf_protection') == TRUE)
+		if ($this->CI->config->item('Oauth2_CSRF_Supported') == TRUE)
 		{
 			$_POST[$this->CI->security->get_csrf_token_name()] = $get['state'];
 			$this->CI->security->csrf_verify();
@@ -107,8 +104,8 @@ abstract class Oauth2_provider{
 		$token_url['client_id'] = $this->client_ID;
 		$token_url['client_secret'] = $this->client_Secret;
 		$token_url['grant_type'] = 'authorization_code';
-		if($this->CI->config->item('Oauth_Grant_Type') != ""){
-			$token_url['grant_type'] = $this->CI->config->item('Oauth_Grant_Type');
+		if($this->CI->config->item('Oauth2_Grant_Type') != ""){
+			$token_url['grant_type'] = $this->CI->config->item('Oauth2_Grant_Type');
 		}
 		switch ($token_url['grant_type'])
 		{
@@ -158,18 +155,24 @@ abstract class Oauth2_provider{
 				
 			break;
 
-		}	
-
+		}
 		if(isset($return['error'])){
 			//return $this->
 			throw new Exception("Error Processing Request", 1);
 			
 		}
 		return $return;
-	}
+
+	}	
 
 	abstract function get_scope();
 
 	abstract function get_user($access_token);
 
+	protected function throw_oauth2_exception($response, $response_type, $response_details = null){
+    	
+    		throw new CamelotAuthException($this->response_codes[$response], $this->CI->lang->line('camelot_error_' . $response),TRUE, $response_details);
+    	
+    	return FALSE;
+    }
 }

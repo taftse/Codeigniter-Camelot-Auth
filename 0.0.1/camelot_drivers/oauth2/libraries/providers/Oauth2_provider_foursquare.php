@@ -20,36 +20,40 @@ if (!defined('BASEPATH'))
  *
  * @subpackage camelot_auth
  */
-class Oauth2_Provider_Google extends Oauth2_provider
+class Oauth2_Provider_Foursquare extends Oauth2_provider
 {
-	public function __Construct($driver)
+	public function __Construct()
 	{
-		$this->provider_name = 'Google';
-		parent::__Construct($driver);
-		$this->method = 'POST';
+		$this->provider_name = 'Foursquare';
+		parent::__Construct();
 	}
 
 	public function get_scope()
 	{
 		$scope = array();
-		foreach ($this->CI->config->item('Google_Permissions') as $premission => $value) {
-			if($value === TRUE){
-				$premission = 'https://www.googleapis.com/auth/userinfo.'.$premission;
+		/*foreach ($this->CI->config->item('Foursquare_Permissions') as $premission => $value) {
+			if($value == TRUE){
 				array_push($scope,$premission);
 			}
 		}
 		if(!empty($scope) && is_array($scope)){
-			$scope = implode(' ', $scope);
-		}
-		
-		return $scope;
+			$scope = implode(',', $scope);
+		}*/
+		return '';//$scope;
 	}
 
 	public function get_user($access_token)
 	{
-		$api_url = $this->api_endpoint.'?alt=json&'.http_build_query(array('access_token' => $access_token));
-
+		$api_url = $this->api_endpoint.'?'.http_build_query(array('oauth_token' => $access_token,
+			'v'=>'20120426'));
+		 
 		$userdata = json_decode(file_get_contents($api_url));
-		return $userdata;
+
+		$user_data['user_ID'] = $userdata->response->user->id;
+		$user_data['user_first_name'] = $userdata->response->user->firstName;
+		$user_data['user_last_name'] = $userdata->response->user->lastName;
+		$user_data['user_username'] = '';
+		$user_data['user_email'] = $userdata->response->user->contact->email;
+		return $user_data;
 	}
 }

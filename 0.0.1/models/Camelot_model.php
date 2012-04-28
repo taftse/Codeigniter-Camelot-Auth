@@ -15,7 +15,7 @@ if (!defined('BASEPATH'))
  */
 
 class Camelot_model extends CI_Model{
-	 /**
+		 /**
 	* The database table to use, only
 	* set if you want to bypass the magic
 	*
@@ -39,58 +39,28 @@ class Camelot_model extends CI_Model{
     public function __construct()
     {
         parent::__construct();
-        
 
     }
 
-    public function get($primary_value)
+
+    public function get_account_by_id($account_ID){
+        echo('arg1');
+        $this->_set_where('',$account_ID);
+        $query = $this->db->get($_table);
+        if($query->num_rows() ==1){
+            return $query->row();
+        }
+        return FALSE;
+    }
+
+    public function register_account($user_data)
     {
-        //$this->_run_before_callbacks('get');
-        
-        $this->db->where($this->primary_key, $primary_value);
-        $result = $this->db->get($this->_table);
-        return $result->row();
+        $account_data['Account_First_Name'] = $user_data['user_first_name'];
+        $account_data['Account_Last_Name'] = $user_data['user_last_name'];
+        $account_data['Account_Email'] = $user_data['user_email'];
+        $this->db->insert('auth_account',$account_data);
+        return $this->db->insert_id();
     }
-
-    public function get_where($key,$value = NULL){
-    		$this->_set_where($key,$value);
-    		$result = $this->get($this->_table);
-    		return $result->row();
-    }
-
-    public function get_many_where($key,$value= NULL)
-    {
-    	$this->_set_where($key,$value);
-    	$result = $this->get($this->_table);
-    	return $result->result();
-    }
-
-    public function insert($data)
-    {
-    	$this->db->insert($this->_table, $data);
-    	return $this->db->insert_id();
-    }
-
-    public function insert_many($data){
-    	$ids = array();
-    	foreach ($data as $row) {
-    		$ids[] = $this->insert($row);
-    	}
-    	return $ids;
-    }
-
-
-/**
-* add update functions
-*
-*
-*
-*
-*
-*/
-
-
-
 
     protected function _set_where($key,$value = NULL){
     		if(is_array($key)){
@@ -99,5 +69,4 @@ class Camelot_model extends CI_Model{
     			$this->db->where($key, $value);
     		}
     }
-
 }

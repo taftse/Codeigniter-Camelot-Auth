@@ -13,18 +13,31 @@ if (!defined('BASEPATH'))
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-
+include 'Camelot_loader.php';
 class Camelot_Driver{
 
-    public $camelot;
-    protected $CI;
+	protected $CI;
 
-    public function __construct($camelot = NULL){
-    	include_once 'camelot_loader.php';
-        $this->camelot = $camelot;
-        $this->CI =& get_instance();
-        $this->load = new Camelot_Loader($camelot->driver_name);
-        $this->CI->load->model('Camelot_model');
-    }
+	protected $load;
+
+	public function __construct($driver_name){
+		$this->CI =& get_instance();
+		$this->load= new Camelot_loader($driver_name);
+	}
+
+	protected function login($account_ID){
+		//$this->CI->camelot_auth->log('login',array('Account_ID' => $account_ID ));
+		$user_details = $this->CI->camelot_model->get_account_by_id($account_ID);
+		return $this->create_session($user_details);
+		
+	}
+
+
+	private function create_session($user_details)
+	{
+		print_r($user_details);
+		
+		//$this->CI->session->set_userdata($session_details);
+		return false;
+	}
 }
-

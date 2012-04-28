@@ -22,10 +22,10 @@ if (!defined('BASEPATH'))
  */
 class Oauth2_Provider_Facebook extends Oauth2_provider
 {
-	public function __Construct($driver)
+	public function __Construct()
 	{
 		$this->provider_name = 'Facebook';
-		parent::__Construct($driver);
+		parent::__Construct();
 	}
 
 	public function get_scope()
@@ -40,6 +40,7 @@ class Oauth2_Provider_Facebook extends Oauth2_provider
 			$scope = implode(',', $scope);
 		}
 		return $scope;
+		
 	}
 
 	public function get_user($access_token)
@@ -48,9 +49,16 @@ class Oauth2_Provider_Facebook extends Oauth2_provider
 
 		$userdata = json_decode(file_get_contents($api_url));
 
-		return $this->create_user_session($userdata);
-		//return $userdata;
+		$user_data['user_ID'] = $userdata->id;
+		$user_data['user_first_name'] = $userdata->first_name;
+		$user_data['user_last_name'] = $userdata->last_name;
+		$user_data['user_username'] = $userdata->username;
+		$user_data['user_email'] = $userdata->email;
+		/*$user_data[] = $userdata->;
+		$user_data[] = $userdata->;
+		$user_data[] = $userdata->;
+		$user_data[] = $userdata->;*/
+		return $user_data;
 	}
 
-	
 }

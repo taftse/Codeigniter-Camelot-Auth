@@ -15,9 +15,9 @@ if (!defined('BASEPATH'))
  */
 
 
-class Camelot_Loader{
+class Camelot_Loader {
 
-    protected $CI;
+	protected $CI;
     public function __construct($driver_name)
     {
         $this->CI =& get_instance();
