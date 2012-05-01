@@ -12,4 +12,4 @@ before_script:
   - phpenv rehash
   - sh -c "if [ '$DB' = 'mysql' ] || [ '$DB' = 'pdo/mysql' ]; then mysql -e 'create database IF NOT EXISTS ci_test;'; fi"
 
-script: phpunit --configuration third_party/Camelot-Auth/tests/travis/$DB.phpunit.xml
+script: phpunit --configuration tests/travis/$DB.phpunit.xml
