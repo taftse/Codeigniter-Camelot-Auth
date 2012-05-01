@@ -121,13 +121,3 @@ $config['Facebook_Permissions']['friends_work_history'] = FALSE;
 
 //N/A	Provides access to the user's primary email address in the email property. Do not spam users. Your use of email must comply both with Facebook policies and with the CAN-SPAM Act.
 $config['Facebook_Permissions']['email'] = FALSE;		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	

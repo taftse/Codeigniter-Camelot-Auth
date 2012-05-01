@@ -15,7 +15,7 @@ if (!defined('BASEPATH'))
  */
 
 
-class Camelot_auth{
+class Camelot_auth {
 
 	 // codeigniter instance
     protected $CI;
