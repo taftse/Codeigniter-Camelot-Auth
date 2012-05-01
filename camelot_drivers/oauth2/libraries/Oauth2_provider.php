@@ -60,7 +60,7 @@ abstract class Oauth2_provider{
  		$this->CI =& get_instance();
  		$this->client_ID = $this->CI->config->item('Oauth2_Client_ID');
 		$this->client_Secret = $this->CI->config->item('Oauth2_Client_Secret');
-		$this->callback_url = site_url(get_instance()->uri->uri_string());
+		$this->callback_url = site_url($this->CI->uri->uri_string());
 		if($this->CI->config->item('Oauth2_Callback_URL_Override') != ""){
 			$this->callback_url = $this->CI->config->item('Oauth2_Callback_URL_Override');
 		}
@@ -72,6 +72,7 @@ abstract class Oauth2_provider{
 	{
 		$params['client_id'] = $this->client_ID;
 		$params['redirect_uri'] = $this->callback_url.'/callback';
+		echo $params['redirect_uri'];
 		if ($this->CI->config->item('Oauth2_CSRF_Supported') == TRUE)
 		{
 			$params['state'] = $this->CI->security->get_csrf_hash();

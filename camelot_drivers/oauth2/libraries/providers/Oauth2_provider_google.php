@@ -34,7 +34,7 @@ class Oauth2_Provider_Google extends Oauth2_provider
 		$scope = array();
 		foreach ($this->CI->config->item('Google_Permissions') as $premission => $value) {
 			if($value === TRUE){
-				$premission = 'https://www.googleapis.com/auth/userinfo.'.$premission;
+				//$premission = 'https://www.googleapis.com/auth/userinfo.'.$premission;
 				array_push($scope,$premission);
 			}
 		}
