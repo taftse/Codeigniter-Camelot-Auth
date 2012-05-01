@@ -17,7 +17,7 @@ if (!defined('BASEPATH'))
 
 $config['Oauth2_Client_ID'] = '';
 $config['Oauth2_Client_Secret'] = '';
-$config['Oauth2_Callback_URL_Override'] = '';
+$config['Oauth2_Callback_URL_Override'] = "";
 $config['Oauth2_Authorize_URL'] = 'https://www.facebook.com/dialog/oauth';
 $config['Oauth2_Access_Token_URL'] = 'https://graph.facebook.com/oauth/access_token';
 $config['Oauth2_Endpoint'] = 'https://graph.facebook.com/me';
