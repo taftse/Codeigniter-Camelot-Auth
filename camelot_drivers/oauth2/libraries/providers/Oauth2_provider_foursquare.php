@@ -26,20 +26,12 @@ class Oauth2_Provider_Foursquare extends Oauth2_provider
 	{
 		$this->provider_name = 'Foursquare';
 		parent::__Construct();
+		$this->method ='POST';
 	}
 
 	public function get_scope()
 	{
-		$scope = array();
-		/*foreach ($this->CI->config->item('Foursquare_Permissions') as $premission => $value) {
-			if($value == TRUE){
-				array_push($scope,$premission);
-			}
-		}
-		if(!empty($scope) && is_array($scope)){
-			$scope = implode(',', $scope);
-		}*/
-		return '';//$scope;
+		return '';
 	}
 
 	public function get_user($access_token)

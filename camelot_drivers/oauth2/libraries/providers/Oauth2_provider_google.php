@@ -51,7 +51,7 @@ class Oauth2_Provider_Google extends Oauth2_provider
 
 		$userdata = json_decode(file_get_contents($api_url));
 
-		var_dump($userdata);
+		
 		//return FALSE;
 		$user_data['user_ID'] = $userdata->id;
 		$user_data['user_first_name'] = $userdata->given_name;
