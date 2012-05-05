@@ -50,8 +50,8 @@
  		$this->signature = $signature;
  	}
 
- 	public function add_extention(){
-
+ 	public function set_extensions($extensions){
+ 		$this->extensions = $extensions;
  	}
 
  	public function add_descriptor(){

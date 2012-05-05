@@ -15,7 +15,7 @@
 class Contact_Person{
 
 	public string $contact_type;
-	public $extension = NULL;
+	public $extensions = NULL;
 	public string $company = NULL;
 	public string $given_name = NULL;
 	public string $sur_name = NULL;
@@ -27,8 +27,8 @@ class Contact_Person{
 		$this->$contact_type = $contact_type;
 	}
 
-	public function set_extension($extension){
-		$this->extension = $extension;
+	public function set_extensions($extensions){
+		$this->extensions = $extensions;
 	}
 
 	public function set_company($company){

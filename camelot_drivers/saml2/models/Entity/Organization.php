@@ -17,7 +17,7 @@ class Organization{
 	public array $name = array();
 	public array $display_name = array();
 	public array $URL = array();
-	public $extention = NULL;
+	public $extentions = NULL;
 
 	public function __construct(array $name,array $display_name,array $URL,array $extention = NULL){
 		$this->add_name($name['value'],$name['lang']);
@@ -38,8 +38,8 @@ class Organization{
 	public function add_URL($URL,$language){
 		$this->URL[][$language]= $URL;
 	}
-	public function add_extention($extention){
-		$this->extention = $extention;
+	public function set_extentions($extentions){
+		$this->extentions = $extentions;
 	}
 
 }
