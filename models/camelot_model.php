@@ -44,6 +44,18 @@ class Camelot_model extends CI_Model{
     }
 
 
+     /**
+     * Fetch a single record based on the primary key. Returns an object.
+     */
+    public function get($primary_value)
+    {
+        
+
+        $this->db->where($this->primary_key, $primary_value);
+        $query = $this->db->get($this->_table);
+       return $query->row();
+    }
+
     public function get_account_by_ID($account_ID){
         
         $this->_set_where('Account_ID',$account_ID);

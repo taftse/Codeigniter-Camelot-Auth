@@ -30,7 +30,7 @@ class Camelot_auth {
     protected $driver_name = NULL;
 
     // the provider making the requests
-    //public $provider_name = NULL;
+    public $provider_name = NULL;
 
     // the driver to be used 
     protected $driver = NULL;
@@ -107,7 +107,7 @@ class Camelot_auth {
     public function set_provider($provider_name){
        	// does the provider exist 
        	if(array_key_exists($provider_name, $this->supported_providers)){
-
+          $this->provider_name = $provider_name;
       		$driver_name = $this->supported_providers[$provider_name]['Driver'];
        		// does the driver exist
        		if (key_exists($driver_name, $this->supported_drivers)) {
