@@ -12,16 +12,13 @@
  *  @filesource
  */
 
-class Endpoint_type {
-	
-	public $binding;
-	public $location;
-	public $response_location = NULL;
+class Requested_attribute 
+{
+	public bool $required = FALSE;
 
-	public function __construct($binding,$location,$response_location = NULL)
+	public function __construct($required = FALSE)
 	{
-		$this->binding = $binding;
-		$this->location = $location;
-		$this->response_location = $response_location;
+
+		$this->required = $required;
 	}
 }

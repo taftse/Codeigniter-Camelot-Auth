@@ -12,27 +12,27 @@
  *  @filesource
  */
 
-class Role_descriptor{
+class Affiliation_descriptor{
 
 	// attributes
-	public $protocol_support_enumeration;
+	public $affiliation_owner_ID;
 	public $ID = NULL;
 	public $valid_until = NULL;
 	public $cache_duration = NULL;
-	public $error_URL = NULL;
+	
 	//elements
 	public $signature = NULL;
 	public $extensions = NULL;
+	public array $affiliate_member;
 	public array $key_descriptor = NULL;
-	public array $organization = array();
- 	public array $contact_persons = array();
 
-	public function __construct($protocol_support_enumeration,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL){
-		$this->protocol_support_enumeration = $protocol_support_enumeration;
+
+	public function __construct($affiliation_owner_ID,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL){
+		$this->affiliation_owner_ID = $affiliation_owner_ID;
 		$this->ID = $ID;
 		$this->valid_until = $valid_until;
 		$this->cache_duration = $cache_duration;
-		$this->error_URL = $error_URL;
+		
 	}
 
 	public function set_signature($signature){
@@ -43,17 +43,14 @@ class Role_descriptor{
 		$this->extensions = $extensions;
 	}
 
+	public function add_affiliate_member($affiliate_member)
+	{
+		$this->affiliate_member[] = $affiliate_member; 
+	}
 	public function add_key_descriptor(Key_descriptor $key_descriptor)
 	{
 		$this->key_descriptor[] = $key_descriptor;
 	}
 
-	public function add_organisation(Organization $organization){
- 		$this->organization =$organization; 
- 	}
-
- 	public function add_contact_person(Contact_persons $contact_persons){
- 		$this->contact_persons[] = $contact_persons;
- 	}
-
+	
 }

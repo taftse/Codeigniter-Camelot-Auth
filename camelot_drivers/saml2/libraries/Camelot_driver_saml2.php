@@ -23,6 +23,7 @@ class Camelot_driver_saml2 extends Camelot_Driver {
 	public function __construct($provider_name){
 		parent::__construct('saml2');
 		$this->load->model('saml2_metadata_model','metadata_model');
+		//$this->load->library('saml2_metadata_importer');
 		//$this->load->config(ucfirst($provider_name));
 		$this->provider_name = $provider_name;
 	}
@@ -48,15 +49,23 @@ class Camelot_driver_saml2 extends Camelot_Driver {
 			//$metadata_data = $this->CI->saml2_metadata_model->get_URL_by_Name($this->provider_name);
 			// GET all metadata providers
 		}else if (is_string($metadata[0])) {
-			echo 'name';
+			
 			$metadata = $this->CI->saml2_metadata_model->get_URL_by_Name($metadata[0]);
 			// get metadata url where federation is the name 
+
 		}else if(is_int($metadata)){
 			$metadata = $this->CI->saml2_metadata_model->get_URL_by_ID($metadata[0]);// get metadata url where federation is an id
+			
 		}
+		if(empty($metadata))
+		{
+			$metadata = $this->CI->saml2_metadata_model->get_URL_by_Name($this->provider_name);
+		}
+		include('Saml2_metadata_importer.php');
 		var_dump($metadata);
-
-		$metadata_xml = $response = file_get_contents($metadata);
-		var_dump($metadata_xml);
+		$saml2_metadata_importer = new saml2_metadata_importer();
+		var_dump($saml2_metadata_importer->import_from_url($metadata));
+		//$metadata_xml = $response = file_get_contents($metadata);
+		//var_dump($metadata_xml);
 	}
 }

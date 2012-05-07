@@ -17,33 +17,33 @@
  	/**
  	*
  	*/
- 	public string $entity_ID;
+ 	public $entity_ID;
 
  	public $ID = NULL;
 
- 	public date $valid_until = NULL;
+ 	public $valid_until = NULL;
 
- 	public int $cache_duration = NULL;
+ 	public $cache_duration = NULL;
 
  	public $signature = NULL;
 
- 	public array $extentions =array();
+ 	public $extentions =array();
 
- 	public array $desctiptors = array();
+ 	public $desctiptors = array();
 
- 	public array $organization = array();
+ 	public $organization = array();
 
- 	public array $contact_persons = array();
+ 	public $contact_persons = array();
 
- 	public array $additional_metadata_locations = NULL;
+ 	public $additional_metadata_locations = NULL;
 
  	
  	public function __construct($entity_ID, $ID = NULL,$valid_until = NULL,$cache_duration = NULL)
  	{
- 		$this->$entity_ID = $entity_ID;
+ 		$this->entity_ID = $entity_ID;
  		$this->ID = $ID;
- 		$this->valid_until = $valid_until
- 		$this->cache_duration = $cache_duration
+ 		$this->valid_until = $valid_until;
+ 		$this->cache_duration = $cache_duration;
  	}
 
  	public function set_signature($signature){
@@ -54,8 +54,8 @@
  		$this->extensions = $extensions;
  	}
 
- 	public function add_descriptor(){
-
+ 	public function add_descriptor($desctiptor){
+ 		$this->desctiptors[] = $desctiptor;
  	}
 
  	public function add_organisation(Organization $organization){

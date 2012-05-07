@@ -12,11 +12,11 @@
  *  @filesource
  */
 
-class Key_descriptor {
+class KeyDescriptor {
 
 	public $key;
 	public $use = NULL;
-	public array $encryption_method = NULL;
+	public $encryption_method = NULL;
 
 	public function __construct($key, $use = NULL, $encryption_method = NULL)
 	{

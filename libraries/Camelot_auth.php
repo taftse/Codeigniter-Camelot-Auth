@@ -110,30 +110,35 @@ class Camelot_auth {
           $this->provider_name = $provider_name;
       		$driver_name = $this->supported_providers[$provider_name]['Driver'];
        		// does the driver exist
-       		if (key_exists($driver_name, $this->supported_drivers)) {
-       			$driver_file = 'Camelot_driver_' . $driver_name;
-       			$driver_path = dirname(__FILE__) . '/../camelot_drivers/' . $driver_name . '/libraries/'.$driver_file.'.php';
-       			// does the driver file exist 
-       			if (!file_exists($driver_path)) {
-       				return $this->throw_exception('driver_file_missing', 'local_response', array('Driver_Name' => $driver_name,'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
-       			}
-       			// include the basic driver 
-       			include_once 'Camelot_driver.php';
-       			// include the driver 
-       			include_once $driver_path;
-       			// does the class exist ?
-       			if (!class_exists($driver_file)) {
-       			 	return $this->throw_exception( 'no_valid_class', 'local_response', array('Driver_Name' => $driver_name, 'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
-           		}
-           		$this->driver = new $driver_file($provider_name);
-           		// loaded the class successful so return true
-           		return TRUE;
-       		}
+       		return $this->set_driver($driver_name);
        	}
        	// provider is unknown throw an exception
        	return $this->throw_exception('unknown_authentication_provider','local_response',array('Provider_Name'=>$provider_name));
        	
-    }        
+    }      
+
+    public function set_driver($driver_name){
+      if (key_exists($driver_name, $this->supported_drivers)) {
+            $driver_file = 'Camelot_driver_' . $driver_name;
+            $driver_path = dirname(__FILE__) . '/../camelot_drivers/' . $driver_name . '/libraries/'.$driver_file.'.php';
+            // does the driver file exist 
+            if (!file_exists($driver_path)) {
+              return $this->throw_exception('driver_file_missing', 'local_response', array('Driver_Name' => $driver_name,'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
+            }
+            // include the basic driver 
+            include_once 'Camelot_driver.php';
+            // include the driver 
+            include_once $driver_path;
+            // does the class exist ?
+            if (!class_exists($driver_file)) {
+              return $this->throw_exception( 'no_valid_class', 'local_response', array('Driver_Name' => $driver_name, 'Driver_File'=>$driver_file.'.php' ,'Driver_Path' => $driver_path));
+              }
+              $this->driver = new $driver_file($this->provider_name);
+              // loaded the class successful so return true
+              return TRUE;
+          }
+          return FALSE;
+    }
 
     public function throw_exception($response, $response_type, $response_details = null){
     	if($response_type== 'local_response'){

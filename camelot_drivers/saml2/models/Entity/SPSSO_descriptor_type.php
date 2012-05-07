@@ -12,6 +12,7 @@
  *  @filesource
  */
 include('./SSO_descriptor_type.php');
+include('./Attribute_consuming_service.php');
 class SPSSO_descriptor_type extends SSO_descriptor_type{
 	// attributes
 	public bool $auth_requests_signed = FALSE;

@@ -11,11 +11,11 @@
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include_once('./Endpoint_type.php');
+include_once(__DIR__.'/Endpoint_type.php');
 class Indexed_endpoint_type extends Endpoint_type{
 	
-	public int $index;
-	public bool $default= FALSE;
+	public $index;
+	public $default= FALSE;
 
 	public function __construct($binding,$location,$index,$default = FALSE,$response_location = NULL)
 	{

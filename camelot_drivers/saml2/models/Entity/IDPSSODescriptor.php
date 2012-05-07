@@ -11,19 +11,20 @@
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include('./SSO_descriptor_type.php');
-class IDPSSO_descriptor_type extends SSO_descriptor_type{
+include(__DIR__.'/SSODescriptor.php');
+class IDPSSODescriptor extends SSODescriptor{
 	// attributes
-	public bool $want_auth_request_signed = FALSE;
+	public $want_auth_request_signed = FALSE;
 	//elements
-	public array $single_sign_on_service = NULL;
-	public array $name_ID_mapping_service = NULL;
-	public array $assertion_ID_request_service = NULL;
-	public array $attribute_profile = NULL;
-	public array $attribute = NULL;
+	public $single_sign_on_service = NULL;
+	public $name_ID_mapping_service = NULL;
+	public $assertion_ID_request_service = NULL;
+	public $attribute_profile = NULL;
+	public $attribute = NULL;
 
-	public function __construct($protocol_support_enumeration,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL){
+	public function __construct($protocol_support_enumeration,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL,$want_auth_request_signed= FALSE){
 		parent::__construct($protocol_support_enumeration,$ID,$valid_until,$cache_duration,$error_URL);
+		$this->want_auth_request_signed = $want_auth_request_signed;
 	}
 
 	public function set_want_auth_request_signed($want_auth_request_signed){

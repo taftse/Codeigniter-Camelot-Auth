@@ -11,15 +11,15 @@
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include('./Role_descriptor.php');
-include('./Indexed_endpoint_type.php');
+include(__DIR__.'/RoleDescriptor.php');
+include(__DIR__.'/Indexed_endpoint_type.php');
 
-class SSO_descriptor_type extends Role_descriptor{
+class SSODescriptor extends RoleDescriptor{
 
-	public array $artifact_resolution_service = NULL;
-	public array $single_logout_service = NULL;
-	public array $manage_name_ID_service = NULL;
-	public array $name_ID_format = NULL;
+	public $artifact_resolution_service = NULL;
+	public $single_logout_service = NULL;
+	public $manage_name_ID_service = NULL;
+	public $name_ID_format = NULL;
 
 	public function __construct($protocol_support_enumeration,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL){
 		parent::__construct($protocol_support_enumeration,$ID,$valid_until,$cache_duration,$error_URL);
