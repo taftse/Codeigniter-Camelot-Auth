@@ -13,7 +13,7 @@ if (!defined('BASEPATH'))
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include_once (__DIR__.'/../models/Entity.php');
+include_once (__DIR__.'/../models/Metadata_Models/Entity/Entity.php');
 class Saml2_metadata_importer
 {
 	protected $metadata;
@@ -119,7 +119,7 @@ class Saml2_metadata_importer
 
 	protected function get_IDPSSODescriptor($descriptor)
 	{
-		include_once (__DIR__.'/../models/Entity/IDPSSODescriptor.php');
+		include_once (__DIR__.'/../models/Metadata_Models/Entity/IDPSSODescriptor.php');
 		$descriptor_attributes['ID'] = NULL;
 		$descriptor_attributes['validUntil'] = NULL;
 		$descriptor_attributes['cacheDuration'] = NULL;	
@@ -196,7 +196,7 @@ class Saml2_metadata_importer
 
 	protected function get_SPSSODescriptor($descriptor)
 	{
-		include_once (__DIR__.'/../models/Entity/SPSSODescriptor.php');
+		include_once (__DIR__.'/../models/Metadata_Models/Entity/SPSSODescriptor.php');
 		$descriptor_attributes['ID'] = NULL;
 		$descriptor_attributes['validUntil'] = NULL;
 		$descriptor_attributes['cacheDuration'] = NULL;	
@@ -271,7 +271,7 @@ class Saml2_metadata_importer
 
 	protected function get_key_descriptor($key_descriptor){
 
-		include_once (__DIR__.'/../models/Entity/KeyDescriptor.php');
+		include_once (__DIR__.'/../models/Metadata_Models/Entity/KeyDescriptor.php');
 
 		$key_attributes['use'] = NULL;
 
@@ -293,12 +293,12 @@ class Saml2_metadata_importer
 	}
 
 	protected function get_organization($organization){
-		include_once (__DIR__.'/../models/Entity/Organization.php');
+		include_once (__DIR__.'/../models/Metadata_Models/Entity/Organization.php');
 
-		$OrganizationName = array('value' => $organization->OrganizationName,'lang'=>$organization->OrganizationName->attributes('xml',TRUE)->lang);
-		$OrganizationDisplayName = array('value' => $organization->OrganizationDisplayName,'lang'=>$organization->OrganizationDisplayName->attributes('xml',TRUE)->lang);
+		$OrganizationName = array('value' => ''.$organization->OrganizationName,'lang'=>''.$organization->OrganizationName->attributes('xml',TRUE)->lang);
+		$OrganizationDisplayName = array('value' => ''.$organization->OrganizationDisplayName,'lang'=>''.$organization->OrganizationDisplayName->attributes('xml',TRUE)->lang);
 
-		$OrganizationURL = array('value' => $organization->OrganizationURL,'lang'=>$organization->OrganizationURL->attributes('xml',TRUE)->lang);
+		$OrganizationURL = array('value' => ''.$organization->OrganizationURL,'lang'=>''.$organization->OrganizationURL->attributes('xml',TRUE)->lang);
 		$Extensions = NULL;
 		if(isset($organization->Extensions))
 		{
@@ -309,10 +309,10 @@ class Saml2_metadata_importer
 
 	protected function get_contact_person($contact_person)
 	{
-		include_once (__DIR__.'/../models/Entity/ContactPerson.php');
+		include_once (__DIR__.'/../models/Metadata_Models/Entity/ContactPerson.php');
 		
 		
-		$imported_contact = new ContactPerson($contact_person->attributes()->contactType);
+		$imported_contact = new ContactPerson(''.$contact_person->attributes()->contactType);
 		
 		if(isset($contact_person->Extensions))
 		{
@@ -321,27 +321,27 @@ class Saml2_metadata_importer
 		
 		if(isset($contact_person->Company))
 		{
-			$imported_contact->set_company($contact_person->Company);
+			$imported_contact->set_company(''.$contact_person->Company);
 		}
 		
 		if(isset($contact_person->GivenName))
 		{
-			$imported_contact->set_given_name($contact_person->GivenName);
+			$imported_contact->set_given_name(''.$contact_person->GivenName);
 		}
 		
 		if(isset($contact_person->SurName))
 		{
-			$imported_contact->set_sur_name($contact_person->SurName);
+			$imported_contact->set_sur_name(''.$contact_person->SurName);
 		}
 		
 		if(isset($contact_person->EmailAddress))
 		{
-			$imported_contact->set_email_address($contact_person->EmailAddress);
+			$imported_contact->set_email_address(''.$contact_person->EmailAddress);
 		}
 		
 		if(isset($contact_person->TelephoneNumber))
 		{
-			$imported_contact->set_telephone_number($contact_person->$TelephoneNumber);
+			$imported_contact->set_telephone_number(''.$contact_person->$TelephoneNumber);
 		}
 		return $imported_contact;		
 	}
@@ -378,44 +378,3 @@ class Saml2_metadata_importer
 		return $array;
 	}
 }
-
-
-
-// role descriptor switch 
-/*
-switch ($node->getName()) {
-					case 'Signature':
-					$imported_descriptor->set_signature($node);
-					break;
-					case 'Extensions':
-					$imported_descriptor->set_extension($node);
-					break;
-					case 'KeyDescriptor':
-					$key_descriptor = $this->get_key_descriptor($node);
-					$imported_descriptor->add_key_descriptor($key_descriptor);
-					break;
-					case 'Organization':
-					$organization = $this->get_organization($node);
-					$imported_descriptor->add_organisation($organization);
-					break;
-					case 'ContactPerson':
-					$contact_persons = $this->get_contact_persons($node);
-					$imported_descriptor->add_contact_persons($contact_persons);
-					break;
-					// sso descriptor type
-					case 'ArtifactResolutionService':
-						$indexed_endpoint_type = $this->get_indexed_endpoint_type($node);
-						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['Binding'],$indexed_endpoint_type['Location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['isDefault'],$indexed_endpoint_type['ResponseLocation']);
-					break;
-					case 'SingleSogoutService':
-						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_single_logout_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
-					break;
-					case 'ManageNameIDService':
-						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_manage_name_ID_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
-					break;
-					case 'NameIDFormat':
-						$imported_descriptor->add_name_ID_format($this->get_any_URI($node));
-					break;
-				}*/

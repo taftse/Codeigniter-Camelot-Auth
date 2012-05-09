@@ -38,7 +38,7 @@ class Camelot_Loader {
 
     public function library($library = '', $params = NULL, $object_name = NULL)
     {
-        $this->CI->load->library(CAMELOT_DRIVER_PATH.'library/'.$library,$params,$object_name);
+        $this->CI->load->library(CAMELOT_DRIVER_PATH.'libraries/'.$library,$params,$object_name);
     }
 
     public function model($model, $name = '', $db_conn = FALSE)
