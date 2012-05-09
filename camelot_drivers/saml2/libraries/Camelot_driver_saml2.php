@@ -22,7 +22,8 @@ class Camelot_driver_saml2 extends Camelot_Driver {
 
 	public function __construct($provider_name){
 		parent::__construct('saml2');
-		$this->load->model('saml2_metadata_model','metadata_model');
+		$this->load->model('saml2_metadata_model');
+		$this->load->library('saml2_entities_importer');
 		//$this->load->library('saml2_metadata_importer');
 		//$this->load->config(ucfirst($provider_name));
 		$this->provider_name = $provider_name;
@@ -62,9 +63,13 @@ class Camelot_driver_saml2 extends Camelot_Driver {
 			$metadata = $this->CI->saml2_metadata_model->get_URL_by_Name($this->provider_name);
 		}
 		include('Saml2_metadata_importer.php');
-		var_dump($metadata);
-		$saml2_metadata_importer = new saml2_metadata_importer();
-		var_dump($saml2_metadata_importer->import_from_url($metadata));
+		
+		$saml2_metadata_importer = new Saml2_metadata_importer();
+		$entities = $saml2_metadata_importer->import_from_url($metadata);
+		
+		var_dump($this->saml2_entities_importer->import($entities));
+		
+		//$this->camelot_saml2_importer->import($saml2_metadata_importer->import_from_url($metadata));
 		//$metadata_xml = $response = file_get_contents($metadata);
 		//var_dump($metadata_xml);
 	}

@@ -11,21 +11,21 @@
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include('./SSO_descriptor_type.php');
-include('./Attribute_consuming_service.php');
-class SPSSO_descriptor_type extends SSO_descriptor_type{
+include_once(__DIR__.'/SSODescriptor.php');
+include(__DIR__.'/Attribute_consuming_service.php');
+class SPSSODescriptor extends SSODescriptor{
 	// attributes
-	public bool $auth_requests_signed = FALSE;
-	public bool $want_auth_request_signed = FALSE;
+	public $auth_requests_signed = FALSE;
+	public $want_auth_request_signed = FALSE;
 	//elements
-	public array $assertion_consumer_services = array();
-	public array $attribute_consumer_services = NULL;
+	public $assertion_consumer_services = array();
+	public $attribute_consumer_services = NULL;
 
 	public function __construct($protocol_support_enumeration,$ID = NULL,$valid_until = NULL,$cache_duration = NULL,$error_URL = NULL){
 		parent::__construct($protocol_support_enumeration,$ID,$valid_until,$cache_duration,$error_URL);
 	}
 
-	public function set_auth_requests_signed($auth_requests_signed){
+	public function set_authn_requests_signed($auth_requests_signed){
 		$this->auth_requests_signed = $auth_requests_signed;
 	}
 	

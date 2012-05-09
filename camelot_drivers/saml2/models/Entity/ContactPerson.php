@@ -12,15 +12,15 @@
  *  @filesource
  */
 
-class Contact_Person{
+class ContactPerson{
 
-	public string $contact_type;
+	public $contact_type;
 	public $extensions = NULL;
-	public string $company = NULL;
-	public string $given_name = NULL;
-	public string $sur_name = NULL;
-	public string $email_address = NULL;
-	public string $telephone_number = NULL;
+	public $company = NULL;
+	public $given_name = NULL;
+	public $sur_name = NULL;
+	public $email_address = NULL;
+	public $telephone_number = NULL;
 
 	public function __construct($contact_type)
 	{

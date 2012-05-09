@@ -14,7 +14,7 @@ if (!defined('BASEPATH'))
  *  @filesource
  */
 include_once (__DIR__.'/../models/Entity.php');
-class saml2_metadata_importer
+class Saml2_metadata_importer
 {
 	protected $metadata;
 	protected $namespaces;
@@ -26,16 +26,16 @@ class saml2_metadata_importer
 	}
 
 	public function import_from_file($file){
-		$this->parse_metadata(file_get_contents($file));
+		return $this->parse_metadata(file_get_contents($file));
 	}
 
 	public function import_from_url($URL){
 		
-		$this->parse_metadata(file_get_contents($URL));
+		return $this->parse_metadata(file_get_contents($URL));
 	}
 
 	public function import_from_text($xml){
-		$this->parse_metadata($xml);
+		return $this->parse_metadata($xml);
 		
 	}
 
@@ -60,56 +60,56 @@ class saml2_metadata_importer
 		$entity_attributes['cacheDuration'] = NULL;	
 
 		$entity_attributes = $this->get_attributes($entity,$entity_attributes);
-		
-		echo $entity->getName().' '. $entity_attributes['entityID'].' <br/>';
 
 		$imported_entity = new Entity($entity_attributes['entityID'],$entity_attributes['ID'],$entity_attributes['validUntil'],$entity_attributes['cacheDuration']);
 
 		foreach ($this->namespaces as $namespace => $URL)  {
-			echo $entity->children($URL)->getName().' <br/>';
-			switch ($entity->children($URL)->getName()) {
-				case 'Extensions':
-					var_dump($entity->children($URL));
-					$imported_entity->set_extensions();
-					break;
-				case 'IDPSSODescriptor':
-					 $imported_entity->add_descriptor($this->get_IDPSSODescriptor($entity->children($URL)));
-					break;
-				case 'SPSSODescriptor':
-					 $this->get_SPSSODescriptor($entity->children($URL));
-					break;
-				case '':
-					break;
-
-				default:	
-					echo 'Unknown metadata schema: '.$entity->children($URL)->getName().' ';
-					break;
+			foreach ($entity->children($URL) as $num => $node) {
+				switch ($node->getName()) {
+					case 'Extensions':
+						$imported_entity->set_extension($node);
+						break;
+					case 'IDPSSODescriptor':
+						 $imported_entity->add_descriptor($this->get_IDPSSODescriptor($node));
+						break;
+					case 'SPSSODescriptor':
+						 $imported_entity->add_descriptor($this->get_SPSSODescriptor($node));
+						break;
+					case 'Organization':
+						$imported_entity->add_organisation($this->get_organization($node));
+						break;
+					case 'ContactPerson':
+						$imported_entity->add_contact_person($this->get_contact_person($node));
+						break;
+					case 'Signature':
+						$imported_entity->set_signature($node);
+						break;
+					default:	
+						echo 'Unknown metadata schema: '.$entity->children($URL)->getName().' ';
+						break;
+				}
 			}
 		}
 		return $imported_entity;
 	} 
 
 	protected function get_entities($entities)
-	{
-		//var_dump($entities);
-		//var_dump($entities->EntitiesDescriptor->children());
-		//$entities = array();
-		
+	{	
 		$imported_entities = array();
 		$last_count = 0;
 		foreach ($this->namespaces as $namespace => $URL) {
-		//	var_dump($entities->children($URL));
 			foreach ($entities->children($URL) as $num =>$entity) {
-				//var_dump($entity);
 				switch ($entity->getName()) {
 					case 'EntityDescriptor':
 						$imported_entities[] = $this->get_entity($entity);		
 					break;
+					case 'Signature':
+						break;
 					default:
 						echo 'Unknown metadata schema: '.$entity->getName().' <br/>';
 						break;
 				}
-				echo 'Entities imported '.count($imported_entities).'<br/>';
+				
 				$last_count = $imported_entities;
 			}	
 		}
@@ -132,7 +132,6 @@ class saml2_metadata_importer
 
 		foreach ($this->namespaces as $namespace => $URL) {
 			foreach ($descriptor->children($URL) as $num =>$node) {
-				var_dump($node->getName());
 				switch ($node->getName()) {
 					// Role Descriptor
 					case 'Signature':
@@ -156,31 +155,31 @@ class saml2_metadata_importer
 					// sso descriptor type
 					case 'ArtifactResolutionService':
 						$indexed_endpoint_type = $this->get_indexed_endpoint_type($node);
-						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['binding'],$indexed_endpoint_type['location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['default'],$indexed_endpoint_type['response_location']);
+						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['Binding'],$indexed_endpoint_type['Location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['isDefault'],$indexed_endpoint_type['ResponseLocation']);
 					break;
-					case 'SingleSogoutService':
+					case 'SingleLogoutService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_single_logout_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_single_logout_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'ManageNameIDService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_manage_name_ID_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_manage_name_ID_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'NameIDFormat':
-						$imported_descriptor->add_name_ID_format($this->get_any_URI($node));
+						$imported_descriptor->add_name_ID_format($node);
 					break;
 					// IDP Descriptor type
 					case 'SingleSignOnService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_single_sign_on_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_single_sign_on_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'NameIDMappingService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_name_ID_mapping_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_name_ID_mapping_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'AssertionIDRequestService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_assertion_ID_request_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_assertion_ID_request_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'AttributeProfile':
 						$imported_descriptor->add_attribute_profile($this->get_any_URI($node));
@@ -192,6 +191,7 @@ class saml2_metadata_importer
 				}
 			}
 		}
+		return $imported_descriptor;
 	}
 
 	protected function get_SPSSODescriptor($descriptor)
@@ -202,51 +202,71 @@ class saml2_metadata_importer
 		$descriptor_attributes['cacheDuration'] = NULL;	
 		$descriptor_attributes['protocolSupportEnumeration'] = NULL;
 		$descriptor_attributes['errorURL'] = NULL;
+		$descriptor_attributes['AuthnRequestSigned'] = NULL;
+		$descriptor_attributes['WantAssertionSigned'] = NULL;
 		$descriptor_attributes = $this->get_attributes($descriptor,$descriptor_attributes);
-		
 		$imported_descriptor = new SPSSODescriptor($descriptor_attributes['protocolSupportEnumeration'],$descriptor_attributes['ID'],$descriptor_attributes['validUntil'],$descriptor_attributes['cacheDuration'],$descriptor_attributes['errorURL']);
-		var_dump($imported_descriptor);
+		
+		if(!is_null($descriptor_attributes['AuthnRequestSigned'])){
+			$imported_descriptor->set_authn_requests_signed($descriptor_attributes['AuthnRequestSigned']);
+		}
 
+		if(!is_null($descriptor_attributes['WantAssertionSigned'])){
+			$imported_descriptor->set_want_auth_request_signed($descriptor_attributes['WantAssertionSigned']);
+		}
 		foreach ($this->namespaces as $namespace => $URL) {
 			foreach ($descriptor->children($URL) as $num =>$node) {
 				switch ($node->getName()) {
+					// Role Descriptor
 					case 'Signature':
 						$imported_descriptor->set_signature($node);
-					break;
+						break;
 					case 'Extensions':
 						$imported_descriptor->set_extension($node);
-					break;
+						break;
 					case 'KeyDescriptor':
 						$key_descriptor = $this->get_key_descriptor($node);
 						$imported_descriptor->add_key_descriptor($key_descriptor);
-					break;
+						break;
 					case 'Organization':
 						$organization = $this->get_organization($node);
 						$imported_descriptor->add_organisation($organization);
-					break;
+						break;
 					case 'ContactPerson':
 						$contact_persons = $this->get_contact_persons($node);
 						$imported_descriptor->add_contact_persons($contact_persons);
-					break;
+						break;
 					// sso descriptor type
 					case 'ArtifactResolutionService':
 						$indexed_endpoint_type = $this->get_indexed_endpoint_type($node);
-						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['binding'],$indexed_endpoint_type['location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['default'],$indexed_endpoint_type['response_location']);
-					break;
-					case 'SingleSogoutService':
+						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['Binding'],$indexed_endpoint_type['Location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['isDefault'],$indexed_endpoint_type['ResponseLocation']);
+						break;
+					case 'SingleLogoutService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_single_logout_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
-					break;
+						$imported_descriptor->add_single_logout_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
+						break;
 					case 'ManageNameIDService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_manage_name_ID_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
-					break;
+						$imported_descriptor->add_manage_name_ID_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
+						break;
 					case 'NameIDFormat':
-						$imported_descriptor->add_name_ID_format($this->get_any_URI($node));
-					break;
+						$imported_descriptor->add_name_ID_format($node);
+						break;
+					// SPSSODescriptor Type
+					case 'AssertionConsumerService':
+						$indexed_endpoint_type = $this->get_indexed_endpoint_type($node);
+						$imported_descriptor->add_assertion_consumer_service($indexed_endpoint_type['Binding'],$indexed_endpoint_type['Location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['isDefault'],$indexed_endpoint_type['ResponseLocation']);
+						break;
+					case 'AttributeConsumingService':
+						$imported_descriptor->add_attribute_consumer_service($node);
+						break;
+					default:
+						echo 'Unknown element';
+						break;
 				}
 			}
 		}
+		return $imported_descriptor;
 	}
 
 	protected function get_key_descriptor($key_descriptor){
@@ -269,47 +289,84 @@ class saml2_metadata_importer
 					break;
 			}
 		}
-		var_dump($key);
 		return new KeyDescriptor($key, $key_attributes['use'], $encryption_method);
 	}
 
 	protected function get_organization($organization){
-		throw new Exception("Error Processing Request get_organization not implemented", 1);
-		
+		include_once (__DIR__.'/../models/Entity/Organization.php');
+
+		$OrganizationName = array('value' => $organization->OrganizationName,'lang'=>$organization->OrganizationName->attributes('xml',TRUE)->lang);
+		$OrganizationDisplayName = array('value' => $organization->OrganizationDisplayName,'lang'=>$organization->OrganizationDisplayName->attributes('xml',TRUE)->lang);
+
+		$OrganizationURL = array('value' => $organization->OrganizationURL,'lang'=>$organization->OrganizationURL->attributes('xml',TRUE)->lang);
+		$Extensions = NULL;
+		if(isset($organization->Extensions))
+		{
+			$Extensions = $organization->Extensions;
+		}
+		return new Organization($OrganizationName,$OrganizationDisplayName,$OrganizationURL,$Extensions);	
 	}
 
-	protected function get_contact_persons($contact_persons)
+	protected function get_contact_person($contact_person)
 	{
-		throw new Exception("Error Processing Request get_contact_persons not implemented", 1);
+		include_once (__DIR__.'/../models/Entity/ContactPerson.php');
 		
+		
+		$imported_contact = new ContactPerson($contact_person->attributes()->contactType);
+		
+		if(isset($contact_person->Extensions))
+		{
+			$imported_contact->set_extensions($contact_person->Extensions);
+		}
+		
+		if(isset($contact_person->Company))
+		{
+			$imported_contact->set_company($contact_person->Company);
+		}
+		
+		if(isset($contact_person->GivenName))
+		{
+			$imported_contact->set_given_name($contact_person->GivenName);
+		}
+		
+		if(isset($contact_person->SurName))
+		{
+			$imported_contact->set_sur_name($contact_person->SurName);
+		}
+		
+		if(isset($contact_person->EmailAddress))
+		{
+			$imported_contact->set_email_address($contact_person->EmailAddress);
+		}
+		
+		if(isset($contact_person->TelephoneNumber))
+		{
+			$imported_contact->set_telephone_number($contact_person->$TelephoneNumber);
+		}
+		return $imported_contact;		
 	}
 
 	protected function get_endpoint_type($node)
 	{
-		$indexed_endpoint_type['binding'] = NULL;
-		$indexed_endpoint_type['location'] = NULL;
-		$indexed_endpoint_type['response_location'] = NULL;
 
-		throw new Exception("Error Processing Request get_endpoint_type not implemented", 1);
+		$endpoint_type['Binding'] = NULL;
+		$endpoint_type['Location'] = NULL;
+		$endpoint_type['ResponseLocation'] = NULL;
+		return $this->get_attributes($node,$endpoint_type);
+		
 		
 	}
 
 	protected function get_indexed_endpoint_type($node)
 	{
-		$indexed_endpoint_type['binding'] = NULL;
-		$indexed_endpoint_type['location'] = NULL;
+		$indexed_endpoint_type['Binding'] = NULL;
+		$indexed_endpoint_type['Location'] = NULL;
+		$indexed_endpoint_type['ResponseLocation'] = NULL;
 		$indexed_endpoint_type['index'] = NULL;
-		$indexed_endpoint_type['default'] = FALSE;
-		$indexed_endpoint_type['response_location'] = NULL;
-
-		throw new Exception("Error Processing Request get_indexed_endpoint_type not implemented", 1);
-		
+		$indexed_endpoint_type['isDefault'] = FALSE;
+		return $this->get_attributes($node,$indexed_endpoint_type);
 	}
 
-	protected function get_any_URI($node)
-	{
-		throw new Exception("Error Processing Request get_any_URI not implemented", 1);
-	}
 	/**
 	* parses the attribute list and returns a array 
 	* if the array field is provided then it will override values;
@@ -348,15 +405,15 @@ switch ($node->getName()) {
 					// sso descriptor type
 					case 'ArtifactResolutionService':
 						$indexed_endpoint_type = $this->get_indexed_endpoint_type($node);
-						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['binding'],$indexed_endpoint_type['location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['default'],$indexed_endpoint_type['response_location']);
+						$imported_descriptor->add_artifact_resolution_service($indexed_endpoint_type['Binding'],$indexed_endpoint_type['Location'],$indexed_endpoint_type['index'],$indexed_endpoint_type['isDefault'],$indexed_endpoint_type['ResponseLocation']);
 					break;
 					case 'SingleSogoutService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_single_logout_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_single_logout_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'ManageNameIDService':
 						$endpoint_type = $this->get_endpoint_type($node);
-						$imported_descriptor->add_manage_name_ID_service($endpoint_type['binding'],$endpoint_type['location'],$endpoint_type['response_location']);
+						$imported_descriptor->add_manage_name_ID_service($endpoint_type['Binding'],$endpoint_type['Location'],$endpoint_type['ResponseLocation']);
 					break;
 					case 'NameIDFormat':
 						$imported_descriptor->add_name_ID_format($this->get_any_URI($node));

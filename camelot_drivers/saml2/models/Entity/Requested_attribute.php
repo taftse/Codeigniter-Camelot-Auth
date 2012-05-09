@@ -14,7 +14,7 @@
 
 class Requested_attribute 
 {
-	public bool $required = FALSE;
+	public $required = FALSE;
 
 	public function __construct($required = FALSE)
 	{

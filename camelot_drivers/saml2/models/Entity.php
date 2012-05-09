@@ -62,8 +62,8 @@
  		$this->organization =$organization; 
  	}
 
- 	public function add_contact_person(Contact_persons $contact_persons){
- 		$this->contact_persons[] = $contact_persons;
+ 	public function add_contact_person(ContactPerson $contact_person){
+ 		$this->contact_persons[] = $contact_person;
  	}
 
  	public function add_additional_metadata_locations($URL,$namespace){

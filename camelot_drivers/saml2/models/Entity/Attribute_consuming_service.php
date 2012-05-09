@@ -11,14 +11,14 @@
  *  @link            http://labs.Twsweb-int.com/network
  *  @filesource
  */
-include('./Requested_attribute.php');
+include(__DIR__.'/Requested_attribute.php');
 class Attribute_consuming_service{
 
-	public int $index;
-	public bool $default = FALSE;
-	public array $service_name = array();
-	public array $service_descriptor = NULL;
-	public array $requested_attribute = array();
+	public $index;
+	public $default = FALSE;
+	public $service_name = array();
+	public $service_descriptor = NULL;
+	public  $requested_attribute = array();
 
 	public function __construct($index,$default = FALSE){
 		$this->index = $index;
